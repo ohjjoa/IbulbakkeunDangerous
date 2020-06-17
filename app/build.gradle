@@ -23,6 +23,42 @@ android {
         }
     }
 
+    viewBinding {
+        enabled = true
+    }
+
+    task jacoco(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+            xml {
+                def xmlFile = new File("${project.rootDir}/build/reports/jacoco/jacoco_report.xml")
+                destination xmlFile
+            }
+            html {
+                def htmlFile = new File("${project.rootDir}/build/reports/jacoco/jacoco_report")
+                destination htmlFile
+            }
+            classDirectories.from = files(
+                    fileTree(
+                            dir: "${buildDir}/intermediates/classes/debug",
+                            exclude: [
+                                    '**/R.class',
+                                    '**/R$*.class',
+                                    '**/BuildConfig.class',
+                                    '**/*_ViewBinding.class',
+                                    '**/domain/model/*$$Parcelable*.class',
+                                    '**/view/activity/*',
+                                    '**/view/fragment/*',
+                                    '**/view/contract/*',
+                                    '**/com/bumptech/glide/*',
+                            ]
+                    ))
+        }
+        sourceDirectories.from = files('src/main/java')
+        executionData.from = files('build/jacoco/testDebugUnitTest.exec')
+    }
+
 }
 
 dependencies {
@@ -31,6 +67,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
